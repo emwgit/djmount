@@ -6,3 +6,6 @@
 .libs
 .dirstamp
 Makefile
+autom4te.cache
+configure
+libupnp/config.aux/
