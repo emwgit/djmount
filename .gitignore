@@ -9,3 +9,4 @@ Makefile
 autom4te.cache
 configure
 libupnp/config.aux/
+djmount/search_help.h
