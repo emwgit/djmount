@@ -1,0 +1,377 @@
+From ec8e6f2498d9c273e9498b59aba3b80246397aad Mon Sep 17 00:00:00 2001
+From: Ernst Martin Witte <emw@nocabal.de>
+Date: Thu, 1 May 2014 20:02:54 +0200
+Subject: [PATCH 05/14] applied mac and upnp fixes from sf bug list
+
+---
+ configure.ac            | 6 +++---
+ djmount/Makefile.am     | 2 +-
+ djmount/cache.h         | 1 +
+ djmount/charset.c       | 2 +-
+ djmount/content_dir.c   | 2 +-
+ djmount/content_dir.h   | 4 ++--
+ djmount/content_dir_p.h | 2 +-
+ djmount/device.c        | 4 ++--
+ djmount/device.h        | 4 ++--
+ djmount/device_list.c   | 8 ++++----
+ djmount/device_list.h   | 2 +-
+ djmount/didl_object.h   | 2 +-
+ djmount/djfs_p.h        | 2 +-
+ djmount/file_buffer.c   | 4 ++--
+ djmount/fuse_main.c     | 7 ++++++-
+ djmount/log.c           | 2 +-
+ djmount/object.c        | 2 +-
+ djmount/service.c       | 4 ++--
+ djmount/service.h       | 4 ++--
+ djmount/service_p.h     | 2 +-
+ djmount/test_upnp.c     | 4 ++--
+ djmount/upnp_util.h     | 4 ++--
+ djmount/xml_util.c      | 2 +-
+ djmount/xml_util.h      | 2 +-
+ 24 files changed, 42 insertions(+), 36 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index c4a2602..762f0df 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -257,9 +257,9 @@ if test x"$with_external_libupnp" = xyes; then
+ 	RT_PACKAGE_FIND([libupnp], [], [-lupnp -lthreadutil -lixml], 
+ 			[libupnp >= 1.3.1], 
+ 	[
+-#	include <upnp/ixml.h>
+-#	include <upnp/upnp.h>
+-#	include <upnp/upnptools.h>
++#	include <ixml.h>
++#	include <upnp.h>
++#	include <upnptools.h>
+ #if (!defined UPNP_VERSION) || (UPNP_VERSION < 10301)
+ #	error libupnp version is too old
+ #endif
+diff --git a/djmount/Makefile.am b/djmount/Makefile.am
+index 89c08c9..7b4492a 100644
+--- a/djmount/Makefile.am
++++ b/djmount/Makefile.am
+@@ -25,7 +25,7 @@ if INTERNAL_LIBUPNP
+     # they are not installed
+     UPNP_TMPINC		= @abs_builddir@/_upnp_temp_install
+ 
+-    LIBUPNP_CFLAGS	+= -I$(UPNP_TMPINC)
++    LIBUPNP_CFLAGS	+= -I$(UPNP_TMPINC)/upnp
+ 
+ endif
+ 
+diff --git a/djmount/cache.h b/djmount/cache.h
+index 6bff653..71ad392 100644
+--- a/djmount/cache.h
++++ b/djmount/cache.h
+@@ -25,6 +25,7 @@
+ 
+ #include <stdlib.h>
+ #include <stdbool.h>
++#include <time.h>
+ 
+ 
+ /******************************************************************************
+diff --git a/djmount/charset.c b/djmount/charset.c
+index 05a83d8..4110cf6 100644
+--- a/djmount/charset.c
++++ b/djmount/charset.c
+@@ -44,7 +44,7 @@
+ 
+ #ifdef HAVE_ICONV
+ #	include <iconv.h>
+-#	include <upnp/ithread.h>
++#	include <ithread.h>
+ #else
+ #	include "charset_internal.h"
+ #endif
+diff --git a/djmount/content_dir.c b/djmount/content_dir.c
+index bfb13f0..32ab839 100644
+--- a/djmount/content_dir.c
++++ b/djmount/content_dir.c
+@@ -30,7 +30,7 @@
+ #include "xml_util.h"
+ #include <string.h>
+ #include <inttypes.h>
+-#include <upnp/upnp.h>
++#include <upnp.h>
+ #include "service_p.h"
+ #include "cache.h"
+ #include "log.h"
+diff --git a/djmount/content_dir.h b/djmount/content_dir.h
+index fbdb73d..b4b9863 100644
+--- a/djmount/content_dir.h
++++ b/djmount/content_dir.h
+@@ -31,8 +31,8 @@ extern "C" {
+ 
+ #include <stdint.h>
+ #include <stdbool.h>
+-#include <upnp/ixml.h>
+-#include <upnp/ithread.h>
++#include <ixml.h>
++#include <ithread.h>
+ 
+ #include "service.h"
+ #include "ptr_array.h"
+diff --git a/djmount/content_dir_p.h b/djmount/content_dir_p.h
+index 4c60121..6fc4080 100644
+--- a/djmount/content_dir_p.h
++++ b/djmount/content_dir_p.h
+@@ -26,7 +26,7 @@
+ 
+ #include "content_dir.h"
+ #include "service_p.h"
+-#include <upnp/ithread.h>
++#include <ithread.h>
+ 
+ 
+ /******************************************************************************
+diff --git a/djmount/device.c b/djmount/device.c
+index 723d14e..a48850d 100644
+--- a/djmount/device.c
++++ b/djmount/device.c
+@@ -37,8 +37,8 @@
+ 
+ #include <time.h>
+ #include <stdbool.h>
+-#include <upnp/upnp.h>
+-#include <upnp/LinkedList.h>
++#include <upnp.h>
++#include <LinkedList.h>
+ 
+ 
+ 
+diff --git a/djmount/device.h b/djmount/device.h
+index 53d24a7..78decac 100644
+--- a/djmount/device.h
++++ b/djmount/device.h
+@@ -25,8 +25,8 @@
+ #define DEVICE_INCLUDED 1
+ 
+ 
+-#include <upnp/upnp.h>
+-#include <upnp/ixml.h>
++#include <upnp.h>
++#include <ixml.h>
+ 
+ #include "service.h"
+ 
+diff --git a/djmount/device_list.c b/djmount/device_list.c
+index 9b667d2..e8c4f13 100644
+--- a/djmount/device_list.c
++++ b/djmount/device_list.c
+@@ -36,10 +36,10 @@
+ #include "talloc_util.h"
+ 
+ #include <stdbool.h>
+-#include <upnp/upnp.h>
+-#include <upnp/ithread.h>
+-#include <upnp/upnptools.h>
+-#include <upnp/LinkedList.h>
++#include <upnp.h>
++#include <ithread.h>
++#include <upnptools.h>
++#include <LinkedList.h>
+ 
+ 
+ 
+diff --git a/djmount/device_list.h b/djmount/device_list.h
+index 7793717..4ca5ab3 100644
+--- a/djmount/device_list.h
++++ b/djmount/device_list.h
+@@ -26,7 +26,7 @@
+ #define DEVICE_LIST_INCLUDED 1
+ 
+ 
+-#include <upnp/ixml.h>
++#include <ixml.h>
+ 
+ #include "string_util.h"	// import StringPair
+ #include "service.h"
+diff --git a/djmount/didl_object.h b/djmount/didl_object.h
+index a2f736f..f13e342 100644
+--- a/djmount/didl_object.h
++++ b/djmount/didl_object.h
+@@ -30,7 +30,7 @@ extern "C" {
+ #endif
+ 
+ #include <stdbool.h>
+-#include <upnp/ixml.h>
++#include <ixml.h>
+ 
+ 
+ 
+diff --git a/djmount/djfs_p.h b/djmount/djfs_p.h
+index dc60dce..cc7dc32 100644
+--- a/djmount/djfs_p.h
++++ b/djmount/djfs_p.h
+@@ -29,7 +29,7 @@
+ #include "vfs_p.h"
+ 
+ #include "ptr_array.h"
+-#include <upnp/ithread.h>
++#include <ithread.h>
+ 
+ 
+ /******************************************************************************
+diff --git a/djmount/file_buffer.c b/djmount/file_buffer.c
+index ecf045f..d4b9a8c 100644
+--- a/djmount/file_buffer.c
++++ b/djmount/file_buffer.c
+@@ -34,8 +34,8 @@
+ #include <errno.h>
+ #include <inttypes.h>	// Import intmax_t and PRIdMAX
+ 
+-#include <upnp/upnp.h>
+-#include <upnp/upnptools.h>
++#include <upnp.h>
++#include <upnptools.h>
+ 
+ 
+ // Same definition as in "libupnp/upnp/src/inc/httpreadwrite.h"
+diff --git a/djmount/fuse_main.c b/djmount/fuse_main.c
+index ebeb210..b169361 100644
+--- a/djmount/fuse_main.c
++++ b/djmount/fuse_main.c
+@@ -32,7 +32,12 @@
+ #include <fcntl.h>
+ #include <dirent.h>
+ #include <errno.h>
+-#include <sys/statfs.h>
++#ifdef __APPLE__
++#	include <sys/param.h>
++#	include <sys/mount.h>
++#else
++#	include <sys/statfs.h>
++#endif
+ #ifdef HAVE_SETXATTR
+ #	include <sys/xattr.h>
+ #endif
+diff --git a/djmount/log.c b/djmount/log.c
+index 0650557..db5b6dc 100644
+--- a/djmount/log.c
++++ b/djmount/log.c
+@@ -25,7 +25,7 @@
+ #include "log.h"
+ #include <stdarg.h>
+ #include <stdio.h>
+-#include <upnp/ithread.h>
++#include <ithread.h>
+ #include <stdbool.h>
+ 
+ 
+diff --git a/djmount/object.c b/djmount/object.c
+index 4465a27..ad1934f 100644
+--- a/djmount/object.c
++++ b/djmount/object.c
+@@ -30,7 +30,7 @@
+ #include <string.h>
+ #include <stdio.h>
+ #include <stdbool.h>
+-#include <upnp/ithread.h>
++#include <ithread.h>
+ 
+ #include "log.h"
+ #include "talloc_util.h"
+diff --git a/djmount/service.c b/djmount/service.c
+index 65d6522..60167b8 100644
+--- a/djmount/service.c
++++ b/djmount/service.c
+@@ -34,8 +34,8 @@
+ #include "upnp_util.h"
+ #include "talloc_util.h"
+ 
+-#include <upnp/upnp.h>
+-#include <upnp/upnptools.h>
++#include <upnp.h>
++#include <upnptools.h>
+ 
+ #include "service_p.h"
+ 
+diff --git a/djmount/service.h b/djmount/service.h
+index 21a04aa..64c107c 100644
+--- a/djmount/service.h
++++ b/djmount/service.h
+@@ -26,8 +26,8 @@
+ 
+ #include <stdarg.h>
+ 
+-#include <upnp/upnp.h>
+-#include <upnp/ixml.h>
++#include <upnp.h>
++#include <ixml.h>
+ 
+ #include "string_util.h"	// for StringPair
+ #include "object.h"
+diff --git a/djmount/service_p.h b/djmount/service_p.h
+index 41917f1..481ae4c 100644
+--- a/djmount/service_p.h
++++ b/djmount/service_p.h
+@@ -28,7 +28,7 @@
+ #include "service.h"
+ #include "object_p.h"
+ 
+-#include <upnp/LinkedList.h>
++#include <LinkedList.h>
+ 
+ 
+ /******************************************************************************
+diff --git a/djmount/test_upnp.c b/djmount/test_upnp.c
+index 335cd03..d22d422 100644
+--- a/djmount/test_upnp.c
++++ b/djmount/test_upnp.c
+@@ -40,8 +40,8 @@
+ #include <unistd.h>
+ #include <ctype.h>
+ 
+-#include <upnp/upnp.h>
+-#include <upnp/upnptools.h>
++#include <upnp.h>
++#include <upnptools.h>
+ 
+ #ifdef HAVE_LIBREADLINE
+ #	if defined(HAVE_READLINE_READLINE_H)
+diff --git a/djmount/upnp_util.h b/djmount/upnp_util.h
+index 96ebd16..e443a6d 100644
+--- a/djmount/upnp_util.h
++++ b/djmount/upnp_util.h
+@@ -27,8 +27,8 @@
+ #define UPNP_UTIL_H_INCLUDED
+ 
+ 
+-#include <upnp/upnptools.h>
+-#include <upnp/upnp.h>
++#include <upnptools.h>
++#include <upnp.h>
+ 
+ 
+ #ifdef __cplusplus
+diff --git a/djmount/xml_util.c b/djmount/xml_util.c
+index 68e0361..871071b 100644
+--- a/djmount/xml_util.c
++++ b/djmount/xml_util.c
+@@ -30,7 +30,7 @@
+ #include "talloc_util.h"
+ #include "string_util.h"
+ 
+-#include <upnp/ixml.h>
++#include <ixml.h>
+ #include <stdlib.h>	
+ 
+ 
+diff --git a/djmount/xml_util.h b/djmount/xml_util.h
+index c41c76d..25b78c7 100644
+--- a/djmount/xml_util.h
++++ b/djmount/xml_util.h
+@@ -28,7 +28,7 @@
+ 
+ #include <stdbool.h>
+ #include <inttypes.h>
+-#include <upnp/ixml.h>
++#include <ixml.h>
+ 
+ 
+ #ifdef __cplusplus
+-- 
+2.0.0.rc0
+

@@ -1,4 +1,13 @@
-003-support-fstab-mounting.diff
-000_djmount.1.diff
-001-libupnp-1.6.6.diff
-002-libupnp-1.6.13.diff
+0000_djmount.1.diff
+0001-libupnp-1.6.6.diff
+0002-libupnp-1.6.13.diff
+0003-support-fstab-mounting.diff
+0004-applied-autotools-fix-patch-from-sf-bug-list.patch
+0005-applied-mac-and-upnp-fixes-from-sf-bug-list.patch
+0006-fixed-crash.patch
+0007-do-not-rename-files-base-on-mime-type.patch
+0008-add-nfo.patch
+0009-add-video-MP4V-ES.patch
+0010-fixed-crash-when-using-UTF-8-charset.patch
+0011-support-seeking-in-large-2gb-files.patch
+0012-fix-hang-with-asset-upnp.patch

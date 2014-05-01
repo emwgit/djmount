@@ -1,0 +1,2 @@
+shlibs:Depends=libc6 (>= 2.14), libfuse2 (>= 2.5), libtalloc2 (>= 2.0.4~git20101213), libupnp6 (>= 1:1.6.6)
+misc:Depends=

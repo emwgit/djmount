@@ -1,0 +1,24 @@
+From 39edf354ad69a19f98626912ddb7901bd86982b2 Mon Sep 17 00:00:00 2001
+From: Yonathan Yusim <yonathan@boxee.tv>
+Date: Wed, 6 Jul 2011 17:14:42 +0300
+Subject: [PATCH 08/14] add nfo
+
+---
+ djmount/media_file.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/djmount/media_file.c b/djmount/media_file.c
+index b383e14..7baa81b 100644
+--- a/djmount/media_file.c
++++ b/djmount/media_file.c
+@@ -125,6 +125,7 @@ static const MimeType MIMES[] = {
+ 	/*
+ 	 * Text files (e.g. subtitles)
+ 	 */
++	{ "text/plain",                         NULL,  "nfo"   },
+ 	{ "text/plain",				NULL,	"txt"	},
+ 	// Default for all text files : sub, idx, ssa, ifo, ...
+ 	{ "text/",				NULL,	NULL	},
+-- 
+2.0.0.rc0
+
