@@ -627,11 +627,11 @@ EventHandlerCallback (Upnp_EventType event_type,
 		} else {
 			Log_Printf (LOG_DEBUG, 
 				    "Received Event Renewal for eventURL %s", 
-				    NN(e->PublisherUrl));
+				    NN(UpnpString_get_String(e->PublisherUrl)));
 
 			ithread_mutex_lock (&DeviceListMutex);
 
-			Service* const serv = GetService (e->PublisherUrl,
+			Service* const serv = GetService (UpnpString_get_String(e->PublisherUrl),
 							  FROM_EVENT_URL);
 			if (serv) {
 				if (event_type == 
@@ -652,11 +652,11 @@ EventHandlerCallback (Upnp_EventType event_type,
 			(struct Upnp_Event_Subscribe*) event;
 
 		Log_Printf (LOG_DEBUG, "Renewing subscription for eventURL %s",
-			    NN(e->PublisherUrl));
+			    NN(UpnpString_get_String(e->PublisherUrl)));
      
 		ithread_mutex_lock (&DeviceListMutex);
       
-		Service* const serv = GetService (e->PublisherUrl, 
+		Service* const serv = GetService (UpnpString_get_String(e->PublisherUrl), 
 						  FROM_EVENT_URL);
 		if (serv) 
 			Service_SubscribeEventURL (serv);
@@ -960,6 +960,7 @@ CheckSubscriptionsLoop (void* arg)
 		isleep (CHECK_SUBSCRIPTIONS_TIMEOUT);
 		VerifyTimeouts (CHECK_SUBSCRIPTIONS_TIMEOUT);
 	}
+	return NULL;
 }
 
 
