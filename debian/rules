@@ -36,6 +36,7 @@ override_dh_auto_configure:
 		--infodir=\$${prefix}/share/info \
 		--with-external-libupnp \
 		--with-external-talloc \
+		--disable-debug \
 		CFLAGS="$(CFLAGS)" \
 		LDFLAGS="$(LDFLAGS) -Wl,-z,defs,--as-needed" \
 
