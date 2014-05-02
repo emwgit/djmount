@@ -46,6 +46,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <upnp.h>
 #include <upnpdebug.h>
 
 #include "talloc_util.h"
