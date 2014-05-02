@@ -30,6 +30,9 @@
 #include <fuse.h>
 #include "file_buffer.h"
 
+// for unknown file times (atime, mtime, ctime)
+#define DEFAULT_TIME   ((time_t)946724400)    // Y2K
+
 
 /******************************************************************************
  * @var VFS

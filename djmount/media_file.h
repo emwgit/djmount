@@ -31,6 +31,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+    
+#define OFFS_T_MAX    ((((off_t)1) << (sizeof(off_t) * 8 - 2)) - 1 + (((off_t)1) << (sizeof(off_t) * 8 - 2)))
 
 
 /******************************************************************************

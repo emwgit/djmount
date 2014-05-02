@@ -23,6 +23,9 @@
 
 #include <config.h>
 
+#include <time.h>
+
+#include "vfs.h"
 #include "didl_object.h"
 #include "log.h"
 #include "string_util.h"
@@ -90,12 +93,51 @@ DIDLObject_Create (void* talloc_context,
 			return NULL; // ---------->
 		}
 
-		o->title = XMLUtil_FindFirstElementValue (node, "dc:title", 
+		o->title = XMLUtil_FindFirstElementValue (node, "dc:title",
 							  false, true);
 		if (o->title == NULL)
 			o->title = "";
 
-		o->basename = String_CleanFileName (o, o->title);
+        o->datestr = XMLUtil_FindFirstElementValue (node, "dc:date",
+                              false, true);
+        
+        o->datetime = DEFAULT_TIME;
+        if (o->datestr) {
+            struct tm ltm;
+            time_t    ltime = time(NULL);
+            localtime_r(&ltime, &ltm);
+            struct tm tm;
+            const char *res = strptime(o->datestr, "%FT%T", &tm);
+            if (!res) {
+                res = strptime(o->datestr, "%F", &tm);
+                tm.tm_sec  = 0;
+                tm.tm_min  = 0;
+                tm.tm_hour = 0;
+            }
+            if (!res) {
+                res = strptime(o->datestr, "%T", &tm);
+                tm.tm_year = ltm.tm_year;
+                tm.tm_mon  = ltm.tm_mon;
+                tm.tm_mday = ltm.tm_mday;
+            }
+            if (res) {
+                o->datetime = mktime(&tm);
+            }
+        }
+
+        if (o->datestr && o->title && o->title[0] && o->title[0] != '.') {
+            char *basenameBuffer = talloc_asprintf(o, 
+                                                   "%s - %s", 
+                                                   o->title,
+                                                   o->datestr);
+            o->basename = String_CleanFileName (o, basenameBuffer);
+            talloc_free(basenameBuffer);
+            basenameBuffer = NULL;
+        }
+        else {
+            o->basename = String_CleanFileName (o, o->title);
+        }
+
 		if (o->basename[0] == NUL) {
 			char* s = DIDLObject_GetElementString (o, NULL);
 			Log_Printf (LOG_WARNING, 

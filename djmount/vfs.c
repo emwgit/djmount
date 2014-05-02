@@ -44,9 +44,6 @@
 static const off_t DEFAULT_SIZE = 0; 
 
 
-// for unknown file times (atime, mtime, ctime)
-static const time_t DEFAULT_TIME = 946724400; // Y2K
-
 
 
 /*****************************************************************************
@@ -103,7 +100,7 @@ vfs_dir_begin (register const VFS_Query* const q)
  *****************************************************************************/
 
 int
-vfs_file_begin (int const d_type, register const VFS_Query* const q)
+vfs_file_begin (int const d_type, register const VFS_Query* const q, const time_t ftime)
 {
 	int rc = 0;
 
@@ -114,7 +111,7 @@ vfs_file_begin (int const d_type, register const VFS_Query* const q)
 		q->stbuf->st_mode  = DTTOIF(d_type) | 0444;     
 		q->stbuf->st_nlink = 1;
 		q->stbuf->st_size  = DEFAULT_SIZE; // to be computed latter
-		vfs_set_time (DEFAULT_TIME, q);
+		vfs_set_time (ftime, q);
 	}
 	if (q->filler) {
 		Log_Printf (LOG_DEBUG, "error, listing not a directory : '%s'",
@@ -231,7 +228,7 @@ BrowseDebug (VFS* const self, const char* const sub_path,
 {
 	BROWSE_BEGIN(sub_path, query) {
 	   
-		FILE_BEGIN("uname") {
+		FILE_BEGIN("uname", DEFAULT_TIME) {
 			struct utsname ubuf;
 			int rc = uname (&ubuf);
 			const char* const str = talloc_asprintf 
@@ -242,7 +239,7 @@ BrowseDebug (VFS* const self, const char* const sub_path,
 			FILE_SET_STRING (str, FILE_BUFFER_STRING_STEAL);
 		} FILE_END;
 
-		FILE_BEGIN("talloc_total") {
+		FILE_BEGIN("talloc_total", DEFAULT_TIME) {
 			const char* const str = talloc_asprintf 
 				(tmp_ctx, "%" PRIdMAX " bytes\n",
 				 (intmax_t) talloc_total_size (NULL));
@@ -251,7 +248,7 @@ BrowseDebug (VFS* const self, const char* const sub_path,
 			FILE_SET_STRING (str, FILE_BUFFER_STRING_STEAL);
 		} FILE_END;
 		
-		FILE_BEGIN("talloc_report") {
+		FILE_BEGIN("talloc_report", DEFAULT_TIME) {
 			StringStream* const ss = StringStream_Create (tmp_ctx);
 			FILE* const file = StringStream_GetFile (ss);
 			talloc_report (NULL, file);
@@ -260,7 +257,7 @@ BrowseDebug (VFS* const self, const char* const sub_path,
 			FILE_SET_STRING (str, FILE_BUFFER_STRING_STEAL);
 		} FILE_END;
 		
-		FILE_BEGIN("talloc_report_full") {
+		FILE_BEGIN("talloc_report_full", DEFAULT_TIME) {
 			StringStream* const ss = StringStream_Create (tmp_ctx);
 			FILE* const file = StringStream_GetFile (ss);
 			talloc_report_full (NULL, file);

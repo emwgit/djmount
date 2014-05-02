@@ -74,7 +74,7 @@ BrowseSubTest (const VFS* const vfs, const char* const path,
 			
 			DIR_BEGIN("a2") {
 				DIR_BEGIN("b1") {
-					FILE_BEGIN("f1") {
+					FILE_BEGIN("f1", DEFAULT_TIME) {
 						const char* str = "essais";
 						FILE_SET_STRING (str, 
 								 FILE_BUFFER_STRING_COPY);
@@ -125,7 +125,7 @@ BrowseTest (VFS* const vfs, const char* const path,
 
 		BROWSE_SUB (BrowseSubTest (vfs, BROWSE_PTR, query, tmp_ctx));
 
-		FILE_BEGIN("void_file") {
+		FILE_BEGIN("void_file", DEFAULT_TIME) {
 		} FILE_END;
 		
 		SYMLINK_BEGIN("broken_link") {
@@ -145,7 +145,7 @@ BrowseTest (VFS* const vfs, const char* const path,
 		} DIR_END;
 
 		// should be ignored
-		FILE_BEGIN(NULL) {
+		FILE_BEGIN(NULL, DEFAULT_TIME) {
 		} FILE_END;
 
 	} BROWSE_END;

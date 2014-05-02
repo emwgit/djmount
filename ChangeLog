@@ -1,3 +1,10 @@
+2014-05-02 Ernst Martin Witte <emw@users.sourceforge.net>
+
+    * merged selected changes from from https://github.com/Boxee/djmount
+    * support for file dates and dates in file names to distinguish
+      different media files with same title but with different times.
+
+
 2006-11-19  Rémi Turboult  <r3mi@users.sourceforge.net>
 
 	* djmount/device_list.c (VerifyTimeouts): add a work around in case

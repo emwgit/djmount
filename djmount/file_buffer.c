@@ -116,7 +116,7 @@ FileBuffer_CreateFromURL (void* talloc_context, const char* url,
 off_t
 FileBuffer_GetSize (const FileBuffer* file)
 {
-	return (file && file->file_size);
+	return file ? file->file_size : 0;
 }
 
 

@@ -32,7 +32,7 @@ extern "C" {
 #include <stdbool.h>
 #include <ixml.h>
 
-
+#include <time.h>
 
 /******************************************************************************
  * @var DIDLObject
@@ -60,6 +60,8 @@ typedef struct _DIDLObject {
 	char* 		id;
 	// TBD char* parentId;
 	const char* 	title;	
+    const char*     datestr;
+    time_t          datetime;
 	char* 		cds_class;
 	// TBD bool  restricted; // TBD Not Yet Implemented
 	bool 		searchable;

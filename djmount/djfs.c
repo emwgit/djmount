@@ -33,6 +33,7 @@
 #include "device_list.h"
 #include "xml_util.h"
 #include "device.h"
+#include "media_file.h"
 
 #include "search_help.h"
 
@@ -97,12 +98,12 @@ BrowseSearchDir (DJFS* const self, const char* const sub_path,
 
   BROWSE_BEGIN (sub_path, query) {
     
-    FILE_BEGIN ("search_help.txt") {
+    FILE_BEGIN ("search_help.txt", DEFAULT_TIME) {
       static const char* const str = SEARCH_HELP_TXT_STRING;
       FILE_SET_STRING (str, FILE_BUFFER_STRING_EXTERN);
     } FILE_END;
 
-    FILE_BEGIN ("search_capabilities") {
+    FILE_BEGIN ("search_capabilities", DEFAULT_TIME) {
       const char* caps = NULL;
       DEVICE_LIST_CALL_SERVICE (caps, devName, 
 				CONTENT_DIR_SERVICE_TYPE,
@@ -272,25 +273,32 @@ BrowseChildren (DJFS* const self, const char* const sub_path,
 	} else {
 	  MediaFile file = { .o = NULL };
 	  if (MediaFile_GetPreferred (o, &file)) {
+        const time_t ftime   = o->datetime;
 	    off_t const res_size = MediaFile_GetResSize (&file);
-	    if ( file.playlist &&
-		 ( (self->flags & DJFS_USE_PLAYLISTS) ||
-		   res_size < 0 ||
-		   res_size > FILE_BUFFER_MAX_CONTENT_LENGTH) ) {
-	      char* name = MediaFile_GetName (tmp_ctx, o, file.playlist);
-	      FILE_BEGIN (name) {
-		const char* const str = MediaFile_GetPlaylistContent 
-		  (&file, tmp_ctx);
-		FILE_SET_STRING (str, FILE_BUFFER_STRING_STEAL);
-	      } FILE_END;
-	    } else {
-	      char* name = MediaFile_GetName (tmp_ctx, o, file.extension);
-	      FILE_BEGIN (name) {
-		FILE_SET_URL (file.uri, res_size);
-	      } FILE_END;
-	    }
-	  }
-	}
+        // should we generate a playlist entry
+        if ( file.playlist &&
+             ( (self->flags & DJFS_USE_PLAYLISTS)           ||
+               (res_size <  0)                              ||
+               (res_size >  FILE_BUFFER_MAX_CONTENT_LENGTH) ||
+               (res_size == OFFS_T_MAX)
+             )
+        ) {
+          char* name = MediaFile_GetName (tmp_ctx, o, file.playlist);
+          FILE_BEGIN (name, ftime) {
+              const char* const str = MediaFile_GetPlaylistContent 
+                                           (&file, tmp_ctx);
+              FILE_SET_STRING (str, FILE_BUFFER_STRING_STEAL);
+          } FILE_END;
+        }
+        // ... or just return the plain file instead of a playlist?
+        else {
+          char* name = MediaFile_GetName (tmp_ctx, o, file.extension);
+          FILE_BEGIN (name, ftime) {
+            FILE_SET_URL (file.uri, res_size);
+          } FILE_END;
+        }
+      }
+    }
       } PTR_ARRAY_FOR_EACH_PTR_END;
 
       if ( (self->flags & DJFS_SHOW_METADATA) && 
@@ -298,7 +306,7 @@ BrowseChildren (DJFS* const self, const char* const sub_path,
 	DIR_BEGIN (".metadata") {
 	  PTR_ARRAY_FOR_EACH_PTR (children->objects, o) {
 	    char* const name = MediaFile_GetName (tmp_ctx, o, "xml");
-	    FILE_BEGIN (name) {
+	    FILE_BEGIN (name, DEFAULT_TIME) {
 	      const char* const str = talloc_asprintf
 		(tmp_ctx, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n%s",
 		 DIDLObject_GetElementString (o, tmp_ctx));
@@ -356,7 +364,7 @@ BrowseRoot (VFS* const vfs, const char* const sub_path,
     
     const PtrArray* const names = DeviceList_GetDevicesNames (tmp_ctx);
     
-    FILE_BEGIN("devices") {
+    FILE_BEGIN("devices", DEFAULT_TIME) {
       if (names) {
 	char* str = talloc_strdup(tmp_ctx, "");
 	const char* devName;
@@ -438,7 +446,7 @@ BrowseDebug (VFS* const vfs, const char* const sub_path,
 
   BROWSE_BEGIN(sub_path, query) {
         
-    FILE_BEGIN("versions") {
+    FILE_BEGIN("versions", DEFAULT_TIME) {
       static const char* const str = PACKAGE " " VERSION "\nlibupnp "
 #ifdef UPNP_VERSION_STRING
 	UPNP_VERSION_STRING
@@ -455,13 +463,13 @@ BrowseDebug (VFS* const vfs, const char* const sub_path,
     const char* devName;
     PTR_ARRAY_FOR_EACH_PTR (names, devName) {
       DIR_BEGIN (devName) {
-	FILE_BEGIN ("status") {
+	FILE_BEGIN ("status", DEFAULT_TIME) {
 	  const char* const str = 
 	    DeviceList_GetDeviceStatusString (tmp_ctx, devName, true);
 	  FILE_SET_STRING (str, FILE_BUFFER_STRING_STEAL);
 	} FILE_END;
 
-	FILE_BEGIN ("device_description.xml") {
+	FILE_BEGIN ("device_description.xml", DEFAULT_TIME) {
 	  // Must use FILE_SET_STRING here, instead of FILE_SET_URL with 
 	  // the URL of the description document, because the VFS interface
 	  // would causes a HTTP-RANGE request for the document, which is 

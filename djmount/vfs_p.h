@@ -101,7 +101,7 @@ extern int
 vfs_dir_begin (register const VFS_Query* const q);
 
 extern int
-vfs_file_begin (int const d_type, register const VFS_Query* const q);
+vfs_file_begin (int const d_type, register const VFS_Query* const q, const time_t ftime);
 
 static inline int
 vfs_dir_add_entry (const char* const name, int const d_type,
@@ -198,7 +198,7 @@ vfs_set_time (const time_t t, register const VFS_Query* const q);
 	}
 	
 
-#define _FILE_BEGIN(BASENAME,D_TYPE)					\
+#define _FILE_BEGIN(BASENAME,D_TYPE,FTIME)					\
 	if ((_p = BASENAME) && *_p) {					\
 		if (*_s.ptr == '\0') {					\
 			_s.rc = vfs_dir_add_entry (_p, D_TYPE, _q);	\
@@ -209,10 +209,10 @@ vfs_set_time (const time_t t, register const VFS_Query* const q);
 				if (*_s.ptr != '\0')			\
 					_s.rc = -ENOTDIR;		\
 				else					\
-					_s.rc = vfs_file_begin(D_TYPE,_q); \
+					_s.rc = vfs_file_begin(D_TYPE,_q,FTIME); \
 				if (_s.rc) goto cleanup;
 
-#define FILE_BEGIN(BASENAME)	_FILE_BEGIN(BASENAME, DT_REG)
+#define FILE_BEGIN(BASENAME,FTIME)	_FILE_BEGIN(BASENAME, DT_REG, FTIME)
 
 #define FILE_SET_STRING(CONTENT,STRALLOC)				\
 	vfs_file_set_string ((CONTENT), (STRALLOC), __location__, _q)
@@ -228,7 +228,7 @@ vfs_set_time (const time_t t, register const VFS_Query* const q);
 #define FILE_END		_FILE_END
 
 
-#define SYMLINK_BEGIN(BASENAME)	_FILE_BEGIN(BASENAME, DT_LNK)
+#define SYMLINK_BEGIN(BASENAME)	_FILE_BEGIN(BASENAME, DT_LNK,DEFAULT_TIME)
 
 #define SYMLINK_SET_PATH(PATH)	vfs_symlink_set_path (PATH, _q)
 						
