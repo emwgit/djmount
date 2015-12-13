@@ -302,7 +302,8 @@ BrowseOrSearchAll (ContentDir* cds,
 	// Note: it is allowed to have nb_matched == 0 if it cannot be
 	// computed by the CDS.
 	int nb_retry = 0;
-	while (PtrArray_GetSize (objects) < nb_matched && nb_retry++ < 2) {
+	int nb_retry_max = INT_MAX;
+	while (PtrArray_GetSize (objects) < nb_matched && nb_retry++ < nb_retry_max) {
 		Log_Printf (LOG_WARNING, 
 			    "ContentDir_BrowseId ObjectId=%s : "
 			    "got %d results, expected %d. Retry %d ...",

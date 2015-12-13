@@ -1,3 +1,15 @@
+djmount (0.71-emw-3) unstable; urgency=low
+
+  * Fixed retries
+
+ -- Ernst Martin Witte <emw@nocabal.de>  Thu, 13 Dec 2015 02:17:07 +0100
+
+djmount (0.71-emw-2) unstable; urgency=low
+
+  * Rebuilt against recent gcc / libs
+
+ -- Ernst Martin Witte <emw@nocabal.de>  Thu, 6 Dec 2015 16:06:07 +0100
+
 djmount (0.71-emw-1) unstable; urgency=low
 
   * Included patches from github
