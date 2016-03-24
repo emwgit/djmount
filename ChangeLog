@@ -1,3 +1,17 @@
+2016-03-24  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* m4/gettext.m4: New file, from gettext-0.19.7.
+	* m4/iconv.m4: New file, from gettext-0.19.7.
+	* m4/lib-ld.m4: New file, from gettext-0.19.7.
+	* m4/lib-link.m4: New file, from gettext-0.19.7.
+	* m4/lib-prefix.m4: New file, from gettext-0.19.7.
+	* m4/nls.m4: New file, from gettext-0.19.7.
+	* m4/po.m4: New file, from gettext-0.19.7.
+	* m4/progtest.m4: New file, from gettext-0.19.7.
+	* Makefile.am (SUBDIRS): Add po.
+	(EXTRA_DIST): Add libupnp/config.aux/config.rpath.
+	* configure.ac (AC_CONFIG_FILES): Add po/Makefile.in.
+
 2014-05-02 Ernst Martin Witte <emw@users.sourceforge.net>
 
     * merged selected changes from from https://github.com/Boxee/djmount

@@ -9,7 +9,7 @@ ACLOCAL_AMFLAGS = -I m4 -I gl/m4 -I libupnp/m4
 
 CLEANFILES	= IUpnpErrFile.txt IUpnpInfoFile.txt
 
-SUBDIRS 	= gl
+SUBDIRS 	= po gl
 if INTERNAL_TALLOC
     SUBDIRS 	+= talloc 
 endif
@@ -18,7 +18,7 @@ if INTERNAL_LIBUPNP
 endif
 SUBDIRS 	+= djmount
 
-EXTRA_DIST	= search_help.txt
+EXTRA_DIST	= libupnp/config.aux/config.rpath  search_help.txt
 
 
 # 

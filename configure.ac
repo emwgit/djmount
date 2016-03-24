@@ -310,7 +310,7 @@ AM_CONDITIONAL(INTERNAL_LIBUPNP, test x"$with_external_libupnp" != xyes)
 # Output Makefiles
 #
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([Makefile po/Makefile.in
 		 gl/Makefile
                  djmount/Makefile
                  ])
