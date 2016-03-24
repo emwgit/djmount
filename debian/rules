@@ -36,9 +36,10 @@ override_dh_auto_configure:
 		--infodir=\$${prefix}/share/info \
 		--with-external-libupnp \
 		--with-external-talloc \
+        --with-pic \
 		--disable-debug \
-		CFLAGS="$(CFLAGS)" \
-		LDFLAGS="$(LDFLAGS) -Wl,-z,defs,--as-needed" \
+		CFLAGS="$(CFLAGS) -fPIC" \
+		LDFLAGS="$(LDFLAGS) -fPIC -Wl,-z,defs,--as-needed" \
 
 override_dh_auto_install:
 	$(MAKE) DESTDIR=$(CURDIR)/debian/djmount install
