@@ -18,11 +18,12 @@
 #CROSS= --build $(DEB_BUILD_GNU_TYPE)
 #endif
 
-include /usr/share/hardening-includes/hardening.make
-FLAGS=$(shell dpkg-buildflags --get CFLAGS)
-LDFLAGS=$(shell dpkg-buildflags --get LDFLAGS)
-CFLAGS+=$(HARDENING_CFLAGS)
-LDFLAGS+=$(HARDENING_LDFLAGS)
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+
+include /usr/share/dpkg/buildflags.mk
+
+FLAGS   =  $(FLAGS)
 
 
 %:
